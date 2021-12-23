@@ -1,0 +1,68 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+final CollectionReference _mainCollection = _firestore.collection('DeTai');
+
+class Database {
+  static String documentId = 'H1Fm3psdPENoI6u2gCai';
+
+  static Future<void> addItem({
+    required String title,
+    required String description,
+    required String student,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(documentId).collection('DeTai').doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "title": title,
+      "description": description,
+      "student": student
+    };
+
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Note item added to the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Future<void> updateItem({
+    required String title,
+    required String description,
+    required String student,
+    required String docId,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(documentId).collection('DeTai').doc(docId);
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "title": title,
+      "description": description,
+      "student": student,
+    };
+
+    await documentReferencer
+        .update(data)
+        .whenComplete(() => print("Note item updated in the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Stream<QuerySnapshot> readItems() {
+    CollectionReference detailList =
+        _mainCollection.doc(documentId).collection('DeTai');
+
+    return detailList.snapshots();
+  }
+
+  static Future<void> deleteItem({
+    required String docId,
+  }) async {
+    DocumentReference documentReferencer =
+        _mainCollection.doc(documentId).collection('DeTai').doc(docId);
+
+    await documentReferencer
+        .delete()
+        .whenComplete(() => print('Note item deleted from the database'))
+        .catchError((e) => print(e));
+  }
+}
